@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 import android.widget.VideoView;
 
@@ -508,7 +510,7 @@ public class ChatAct extends AppCompatActivity {
                 case 3:
                     selectedPath = getMusicPath(data.getData());
                     sendFile("audio");
-                    insertMeAudio(selectedPath,null);
+                    insertMeAudio(selectedPath,new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()));
                     Log.d("*===PATH===", selectedPath + "");
                     break;
 
@@ -565,7 +567,7 @@ public class ChatAct extends AppCompatActivity {
         }
     }
 
-    private ProgressDialog pd = new ProgressDialog(this);
+    private ProgressDialog pd;
     int totalProgress;
     private void sendFile(String flag)
     {
@@ -594,30 +596,28 @@ public class ChatAct extends AppCompatActivity {
                     }
                 });
 
-
+                pd = new ProgressDialog(this);
+                pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                pd.setTitle("Datei wird gesendet...");
+                pd.setMessage("Versende Datei an " + c.getName() + ".");
+                pd.show();
+                pd.setProgress(0);
+                pd.setCancelable(false);
+                totalProgress = (int)(file.length()/(16*1024));
+                Toast.makeText(this,totalProgress+"",Toast.LENGTH_LONG).show();
                 Thread t = new Thread() {
                     @Override
                     public void run() {
                         try {
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pd.setTitle("Datei wird gesendet...");
-                                    pd.setCancelable(false);
-                                    totalProgress = (int)file.length()/(16*1024);
-                                    pd.setProgress(0);
-                                    pd.show();
-                                }
-                            });
                             int count;
                             while ((count = fileIn.read(bytes)) > 0) {
                                 outputStream.write(bytes, 0, count);
-                                pd.setProgress(pd.getProgress()+totalProgress);
+                                pd.setProgress(pd.getProgress()+totalProgress/100);
                                 Log.d("*===LOOP===", count + "");
                             }
+                            pd.dismiss();
                             outputStream.close();
-                            Log.e("*===COUNT===", count + "");
                             Log.w("*===SENT===", "whileFin");
                             fileIn.close();
                             MainActivity.getInputStream().close();
