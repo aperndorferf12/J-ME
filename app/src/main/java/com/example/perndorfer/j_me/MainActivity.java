@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             FragmentChats.onCreateStuffAndUpdate();
-                                            ChatAct.insertReceivedAudio(filePath, date);
+                                            ChatAct.insertReceivedAudio(filePath, date,id);
                                         }
                                     });
 
@@ -242,6 +242,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     filePath = j_meFiles.getPath() + "/Files/" + text;
                                     fileOut = new FileOutputStream(filePath);
+                                    db.execSQL("INSERT INTO chatrecords(who,flag,text,date,chat_id) VALUES ('remote','file','" + filePath + "','" + date + "'," + id + ");");
+
                                     writeFile(fileOut);
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                                             new NotificationCompat.Builder(getBaseContext())
                                                     .setSmallIcon(R.drawable.notification)
                                                     .setContentTitle(name)
-                                                    .setContentText(URLDecoder.decode("%F0%9F%93%B9", "UTF-8") + " Video");
+                                                    .setContentText(URLDecoder.decode("%F0%9F%93%82", "UTF-8") + " Datei");
                                     notificationManager.notify(1, mBuilder.build());
                                     break;
 

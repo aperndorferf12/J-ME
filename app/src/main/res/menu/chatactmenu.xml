@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item
-    android:id="@+id/datei"
-    android:title="Datei"
-    android:icon="@drawable/file"/>
+    <item android:id="@+id/datei"
+    android:title="Datei"/>
 
     <item android:id="@+id/bild"
-        android:title="Bild"
-        android:icon="@drawable/image"/>
+        android:title="Bild"/>
 
     <item android:id="@+id/video"
-        android:title="Video"
-        android:icon="@drawable/video"/>
+        android:title="Video"/>
 
     <item android:id="@+id/musik"
-        android:title="Musik"
-        android:icon="@drawable/music"/>
+        android:title="Musik"/>
 
 </menu>
