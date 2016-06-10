@@ -11,10 +11,9 @@
         android:layout_height="match_parent"
         android:id="@+id/viewPager">
         <android.support.v4.view.PagerTabStrip
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/pagerHeader"
             android:layout_gravity="top"
+            style="@style/tabStrip"
             android:background="@color/tabSliderColor"/>
     </android.support.v4.view.ViewPager>
 </LinearLayout>

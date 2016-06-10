@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".ChatAct"/>
         <activity android:name=".Preferences"/>
+        <activity android:name=".FileChooserAct"/>
     </application>
 
 </manifest>

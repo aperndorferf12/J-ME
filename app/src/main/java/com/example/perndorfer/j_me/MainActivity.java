@@ -78,17 +78,9 @@ public class MainActivity extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         fragmentPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(fragmentPagerAdapter);
-        viewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                viewPager.setCurrentItem(1, false);
-                viewPager.setCurrentItem(0, false);
-                viewPager.postInvalidate();
-            }
-        });
+        viewPager.setCurrentItem(1);
         PagerTabStrip pts = (PagerTabStrip) findViewById(R.id.pagerHeader);
         pts.setTabIndicatorColor(getResources().getColor(android.R.color.darker_gray));
-        pts.setTextColor(getResources().getColor(android.R.color.white));
         pts.buildLayer();
         pts.forceLayout();
 
@@ -251,7 +243,21 @@ public class MainActivity extends AppCompatActivity {
                                     filePath = j_meFiles.getPath() + "/Files/" + text;
                                     fileOut = new FileOutputStream(filePath);
                                     writeFile(fileOut);
-                                    fileOut.close();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            FragmentChats.onCreateStuffAndUpdate();
+                                            ChatAct.insertReceivedFile(filePath, date, id);
+                                        }
+                                    });
+
+
+                                    mBuilder =
+                                            new NotificationCompat.Builder(getBaseContext())
+                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setContentTitle(name)
+                                                    .setContentText(URLDecoder.decode("%F0%9F%93%B9", "UTF-8") + " Video");
+                                    notificationManager.notify(1, mBuilder.build());
                                     break;
 
                                 default:

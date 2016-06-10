@@ -309,10 +309,10 @@ public class ChatAct extends ActionBarActivity {
         TextView music = new TextView(context);
         music.setBackgroundResource(R.drawable.music);
         music.setTextColor(black);
-        music.setText(new File(path).getName()+"\n"+date);
+        music.setText(new File(path).getName() + "\n" + date);
         music.setHeight(53);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        llp.setMargins(0,10,0,0);
+        llp.setMargins(0, 10, 0, 0);
         music.setLayoutParams(llp);
 
         music.setOnClickListener(new View.OnClickListener() {
@@ -334,7 +334,7 @@ public class ChatAct extends ActionBarActivity {
         TextView music = new TextView(context);
         music.setBackgroundResource(R.drawable.music);
         music.setTextColor(black);
-        music.setText(new File(path).getName()+"\n"+date);
+        music.setText(new File(path).getName() + "\n" + date);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         llp.setMargins(0,10,0,0);
         music.setLayoutParams(llp);
@@ -434,7 +434,7 @@ public class ChatAct extends ActionBarActivity {
                 break;
 
             case R.id.datei:
-                i = new Intent(Intent.ACTION_PICK, MediaStore.Files.getContentUri("external"));
+                i = new Intent(this,FileChooserAct.class);
                 startActivityForResult(i, 4);
                 break;
 
@@ -473,12 +473,16 @@ public class ChatAct extends ActionBarActivity {
                     break;
 
                 case 4:
+                    selectedPath = data.getStringExtra("path");
+                    sendFile("file");
+                    Log.w("*===FILEPATH===", selectedPath + "");
                     break;
             }
         }
         selectedPath = null;
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 
     private String getImagePath(Uri uri)
     {
@@ -586,7 +590,15 @@ public class ChatAct extends ActionBarActivity {
                 }
             }
         }
+
+    public static void insertReceivedFile(String filePath, String date, int id)
+    {
+        if(id==chatId)
+        {
+            
+        }
     }
+}
 
 
 
