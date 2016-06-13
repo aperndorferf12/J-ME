@@ -47,6 +47,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static String ipString = "10.0.0.13";
     FragmentPagerAdapter fragmentPagerAdapter;
     private DBHelper dbHelper;
     static Socket s;
@@ -74,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ArrayList<Fragment> fragments = getFragments();
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         fragmentPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragments);
@@ -96,10 +101,6 @@ public class MainActivity extends AppCompatActivity {
         new File(f.getPath() + "/Audio").mkdirs();
         new File(f.getPath() + "/Files").mkdirs();
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
 
         mPhoneNumber = sp.getString("myNumber", null);
         if (mPhoneNumber == null) {
@@ -126,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("*===THREAD RUN====", "run: ");
                 setConnectionAndStreams();
 
-                try {
-
+                 try {
                     Log.w("*===IPOFTHREAD===", s.getInetAddress().toString() + "");
 
                     String line = "";
@@ -298,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
             fileOut.close();
             inputStream.close();
             outputStream.close();
-            s.close();
             setConnectionAndStreams();
             Log.w("*===WRITE FINISHED===5", "writeFile: FINISHED");
         } catch (Exception e) {
@@ -402,7 +401,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static void setConnectionAndStreams() {
         try {
-            s = new Socket("192.164.242.80", 1234);
+            if(s!=null)
+            {
+                s.close();
+            }
+            s = new Socket(ipString,1234);
             inputStream = s.getInputStream();
             outputStream = s.getOutputStream();
             Log.d("*===THREAD STARTED====", outputStream.toString() + "");

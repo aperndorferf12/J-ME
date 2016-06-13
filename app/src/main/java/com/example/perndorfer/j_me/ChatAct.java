@@ -9,12 +9,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 import android.widget.VideoView;
 
 import java.io.BufferedWriter;
@@ -59,6 +57,8 @@ public class ChatAct extends AppCompatActivity {
     private static ScrollView sv;
     private OutputStream outputStream;
     private String selectedPath;
+    private static View selectedView;
+    private static String selectedText="";
 
 
     @Override
@@ -88,7 +88,6 @@ public class ChatAct extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
 
         Cursor cu = db.rawQuery("SELECT * FROM chatrecords WHERE chat_id = " + chatId + " ORDER BY _id;", null);
         while (cu.moveToNext()) {
@@ -140,11 +139,24 @@ public class ChatAct extends AppCompatActivity {
         sv.fullScroll(ScrollView.FOCUS_DOWN);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.contextmenu,menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        db.execSQL("DELETE FROM chatrecords WHERE text = '"+selectedText+"' AND chat_id = "+chatId+";");
+        ausgabe.removeView(selectedView);
+        FragmentChats.onCreateStuffAndUpdate();
+        return super.onContextItemSelected(item);
+    }
 
     private void insertMeImage(final String path, String date)
     {
-
         ImageView iv = new ImageView(context);
+        registerForContextMenu(iv);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         iv.setLayoutParams(llp);
@@ -163,6 +175,13 @@ public class ChatAct extends AppCompatActivity {
                 v.getContext().startActivity(intent);
             }
         });
+        iv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClicked(v,path);
+                return false;
+            }
+        });
 
         ausgabe.addView(iv);
         sv.fullScroll(ScrollView.FOCUS_DOWN);
@@ -171,6 +190,7 @@ public class ChatAct extends AppCompatActivity {
     private void insertMeVideo(final String path, String date)
     {
         final VideoView vv = new VideoView(context);
+        registerForContextMenu(vv);
         vv.setVideoPath(path);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(550,550);
         vv.setLayoutParams(llp);
@@ -190,6 +210,7 @@ public class ChatAct extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.parse("file://" + path), "video/*");
                 v.getContext().startActivity(intent);
+                onLongClicked(v,path);
                 return false;
             }
         });
@@ -198,15 +219,16 @@ public class ChatAct extends AppCompatActivity {
         sv.fullScroll(ScrollView.FOCUS_DOWN);
     }
 
-
-    public static void insertReceivedMessage(String msg, String date, int id) {
+    public static void insertReceivedMessage(final String msg, String date, int id) {
         if (id == chatId) {
             TextView tv = new TextView(context);
+            context.registerForContextMenu(tv);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             llp.setMargins(0, 10, 0, 0);
             tv.setLayoutParams(llp);
             tv.setTextSize(16);
             tv.setTextColor(black);
+            tv.setClickable(true);
             //tv.setBackgroundColor(white);
             tv.setBackgroundResource(R.drawable.remote);
             tv.setPadding(30, 10, 30, 10);
@@ -215,6 +237,14 @@ public class ChatAct extends AppCompatActivity {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+            tv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onLongClicked(v,msg);
+                    return false;
+                }
+            });
+
             ausgabe.addView(tv);
             sv.fullScroll(ScrollView.FOCUS_DOWN);
         }
@@ -225,6 +255,7 @@ public class ChatAct extends AppCompatActivity {
             Log.w("*===INSERT IMAGE===6", id + "");
 
             ImageView iv = new ImageView(context);
+            context.registerForContextMenu(iv);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             llp.setMargins(0, 10, 0, 0);
             iv.setLayoutParams(llp);
@@ -244,6 +275,13 @@ public class ChatAct extends AppCompatActivity {
                 }
             });
 
+            iv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onLongClicked(v,path);
+                    return false;
+                }
+            });
 
             ausgabe.addView(iv);
             sv.fullScroll(ScrollView.FOCUS_DOWN);
@@ -256,9 +294,11 @@ public class ChatAct extends AppCompatActivity {
         {
             final VideoView vv = new VideoView(context);
             vv.setVideoPath(path);
+            context.registerForContextMenu(vv);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(550,550);
             llp.setMargins(0, 10, 0, 0);
             vv.setLayoutParams(llp);
+            vv.setClickable(true);
             vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -274,6 +314,7 @@ public class ChatAct extends AppCompatActivity {
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.setDataAndType(Uri.parse("file://" + path), "video/*");
                     v.getContext().startActivity(intent);
+                    onLongClicked(v,path);
                     return false;
                 }
             });
@@ -284,34 +325,53 @@ public class ChatAct extends AppCompatActivity {
 
     }
 
-
-    private void insertMeMessage(String msg, String date)
+    private void insertMeMessage(final String msg, String date)
     {
         TextView tv = new TextView(this);
+        registerForContextMenu(tv);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         tv.setLayoutParams(llp);
         tv.setTextSize(16);
         tv.setTextColor(white);
+        tv.setClickable(true);
         //tv.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
         tv.setBackgroundResource(R.drawable.me);
         tv.setPadding(30, 10, 30, 10);
         tv.setText(eingabe.getText() + msg + "\n" + date);
+
+        tv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClicked(v,msg);
+                return false;
+            }
+        });
         ausgabe.addView(tv);
         sv.fullScroll(ScrollView.FOCUS_DOWN);
     }
 
-    private void insertRemoteMessage(String msg, String date) {
+    private void insertRemoteMessage(final String msg, String date) {
         TextView tv = new TextView(this);
+        registerForContextMenu(tv);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         tv.setLayoutParams(llp);
         tv.setTextSize(16);
         tv.setTextColor(black);
+        tv.setClickable(true);
         //tv.setBackgroundColor(white);
         tv.setBackgroundResource(R.drawable.remote);
         tv.setPadding(30, 10, 30, 10);
         tv.setText(c.getName() + ":\n" + msg + "\n" + date);
+        tv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClicked(v,msg);
+                return false;
+            }
+        });
+
         ausgabe.addView(tv);
         sv.fullScroll(ScrollView.FOCUS_DOWN);
     }
@@ -319,6 +379,7 @@ public class ChatAct extends AppCompatActivity {
     private void insertMeAudio(final String path, String date)
     {
         TextView music = new TextView(context);
+        registerForContextMenu(music);
         music.setBackgroundResource(R.drawable.music);
         music.setTextColor(black);
         music.setText(new File(path).getName() + "\n" + date);
@@ -337,6 +398,14 @@ public class ChatAct extends AppCompatActivity {
             }
         });
 
+        music.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClicked(v,path);
+                return false;
+            }
+        });
+
         ausgabe.addView(music);
         sv.fullScroll(ScrollView.FOCUS_DOWN);
     }
@@ -346,6 +415,7 @@ public class ChatAct extends AppCompatActivity {
         if(id==chatId)
         {
             TextView music = new TextView(context);
+            context.registerForContextMenu(music);
             music.setBackgroundResource(R.drawable.music);
             music.setTextColor(black);
             music.setText(new File(path).getName() + "\n" + date);
@@ -363,38 +433,68 @@ public class ChatAct extends AppCompatActivity {
                 }
             });
 
+            music.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onLongClicked(v,path);
+                    return false;
+                }
+            });
+
             ausgabe.addView(music);
             sv.fullScroll(ScrollView.FOCUS_DOWN);
         }
     }
 
-    public static void insertReceivedFile(String msg, String date, int id)
+    public static void insertReceivedFile(final String msg, String date, int id)
     {
         if(id==chatId)
         {
-            LinearLayout ll = (LinearLayout)context.getLayoutInflater().inflate(R.layout.fc_item,null);
+            final LinearLayout ll = (LinearLayout)context.getLayoutInflater().inflate(R.layout.fc_item,null);
+            context.registerForContextMenu(ll);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             llp.setMargins(0, 10, 0, 0);
             ll.setLayoutParams(llp);
             TextView tv = (TextView)ll.findViewById(R.id.folderName);
             tv.setText(msg);
+            tv.setClickable(true);
+            tv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onLongClicked(ll,msg);
+                    return false;
+                }
+            });
             ausgabe.addView(ll);
             ((ImageView)ll.findViewById(R.id.pic)).setImageDrawable(context.getResources().getDrawable(R.drawable.file));
         }
     }
 
-    private void insertMeFile(String msg, String date)
+    private void insertMeFile(final String msg, String date)
     {
-        LinearLayout ll = (LinearLayout)context.getLayoutInflater().inflate(R.layout.fc_item,null);
+        final LinearLayout ll = (LinearLayout)context.getLayoutInflater().inflate(R.layout.fc_item,null);
+        registerForContextMenu(ll);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         ll.setLayoutParams(llp);
         TextView tv = (TextView)ll.findViewById(R.id.folderName);
         tv.setText(msg);
+        tv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClicked(ll,msg);
+                return false;
+            }
+        });
         ausgabe.addView(ll);
         ((ImageView)ll.findViewById(R.id.pic)).setImageDrawable(context.getResources().getDrawable(R.drawable.file));
     }
 
+    private static void onLongClicked(View v, String s)
+    {
+        selectedView = v;
+        selectedText = s;
+    }
 
     public void send(final View src) {
         Log.w("*===SEND===", "Sending");
@@ -568,7 +668,9 @@ public class ChatAct extends AppCompatActivity {
     }
 
     private ProgressDialog pd;
-    int totalProgress;
+    private long totalBytes = 0l;
+    private long copiedBytes = 0l;
+
     private void sendFile(String flag)
     {
         Log.e("*===sendfile", "sendFile: ");
@@ -603,8 +705,8 @@ public class ChatAct extends AppCompatActivity {
                 pd.show();
                 pd.setProgress(0);
                 pd.setCancelable(false);
-                totalProgress = (int)(file.length()/(16*1024));
-                Toast.makeText(this,totalProgress+"",Toast.LENGTH_LONG).show();
+                totalBytes = file.length();
+                Toast.makeText(this,totalBytes+"",Toast.LENGTH_LONG).show();
                 Thread t = new Thread() {
                     @Override
                     public void run() {
@@ -613,16 +715,14 @@ public class ChatAct extends AppCompatActivity {
                             int count;
                             while ((count = fileIn.read(bytes)) > 0) {
                                 outputStream.write(bytes, 0, count);
-                                pd.setProgress(pd.getProgress()+totalProgress/100);
+                                pd.setProgress((int) ((copiedBytes+= 16*1024) * 100 / totalBytes));
                                 Log.d("*===LOOP===", count + "");
                             }
                             pd.dismiss();
                             outputStream.close();
                             Log.w("*===SENT===", "whileFin");
                             fileIn.close();
-                            MainActivity.getInputStream().close();
-                            MainActivity.getOutputStream().close();
-                            MainActivity.s.close();
+
                             MainActivity.setConnectionAndStreams();
                             bw = MainActivity.getBw();
                             outputStream = MainActivity.getOutputStream();
