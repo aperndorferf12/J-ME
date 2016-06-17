@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#13374D</color>
-    <color name="colorPrimaryDark">#153C54</color>
-    <color name="colorAccent">#ffffff</color>
-    <color name="tabSliderColor">#153C54</color>
+    <color name="colorPrimary">#B90000</color>
+    <color name="colorPrimaryDark">#A10000</color>
+    <color name="colorAccent">#D40000</color>
+    <color name="tabSliderColor">#B90000</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.perndorfer.j_me;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
@@ -45,9 +46,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActionBarActivity {
 
-    private static String ipString = "10.0.0.13";
+    private static String ipString = "10.0.2.244";
     FragmentPagerAdapter fragmentPagerAdapter;
     private DBHelper dbHelper;
     static Socket s;
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("*===THREAD RUN====", "run: ");
                 setConnectionAndStreams();
 
-                 try {
+                try {
                     Log.w("*===IPOFTHREAD===", s.getInetAddress().toString() + "");
 
                     String line = "";
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             FragmentChats.onCreateStuffAndUpdate();
-                                            ChatAct.insertReceivedAudio(filePath, date,id);
+                                            ChatAct.insertReceivedAudio(filePath, date, id);
                                         }
                                     });
 
@@ -401,11 +402,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static void setConnectionAndStreams() {
         try {
-            if(s!=null)
-            {
+            if (s != null) {
                 s.close();
             }
-            s = new Socket(ipString,1234);
+            s = new Socket(ipString, 1234);
+            s = new Socket(ipString, 1234);
             inputStream = s.getInputStream();
             outputStream = s.getOutputStream();
             Log.d("*===THREAD STARTED====", outputStream.toString() + "");

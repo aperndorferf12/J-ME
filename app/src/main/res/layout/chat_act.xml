@@ -41,19 +41,21 @@
         android:id="@+id/eingabe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:background="#ffffff"
         android:editable="true"
         android:paddingLeft="10dp"
+        android:layout_weight="1"
         android:paddingRight="10dp"
         android:height="30dp"/>
     <ImageButton
         android:id="@+id/send"
-        android:background="@drawable/send"
+        android:background="@android:drawable/ic_menu_send"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_weight="0.006"
         android:layout_gravity="bottom"
+        android:layout_weight="0.006"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
         android:onClick="send"/>
 </LinearLayout>
 </LinearLayout>

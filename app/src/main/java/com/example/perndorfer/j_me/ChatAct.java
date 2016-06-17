@@ -1,5 +1,7 @@
 package com.example.perndorfer.j_me;
 
+import android.support.v7.app.ActionBar;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,8 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -43,7 +45,7 @@ import java.util.Date;
 /**
  * Created by Perndorfer on 07.04.2016.
  */
-public class ChatAct extends AppCompatActivity {
+public class ChatAct extends ActionBarActivity {
     private BufferedWriter bw;
     private SQLiteDatabase db;
     private static LinearLayout ausgabe;
@@ -52,7 +54,7 @@ public class ChatAct extends AppCompatActivity {
     private static int chatId;
     private String destPhoneNumber;
     private String mPhoneNumber;
-    private static AppCompatActivity context;
+    private static Activity context;
     private static int black, white;
     private static ScrollView sv;
     private OutputStream outputStream;
