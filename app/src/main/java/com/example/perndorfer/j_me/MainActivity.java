@@ -48,7 +48,7 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static String ipString = "10.0.2.244";
+    private static String ipString = "10.0.0.7";
     FragmentPagerAdapter fragmentPagerAdapter;
     private DBHelper dbHelper;
     static Socket s;
@@ -405,7 +405,7 @@ public class MainActivity extends ActionBarActivity {
             if (s != null) {
                 s.close();
             }
-            s = new Socket(ipString, 1234);
+            //s = new Socket(ipString, 1234);
             s = new Socket(ipString, 1234);
             inputStream = s.getInputStream();
             outputStream = s.getOutputStream();
