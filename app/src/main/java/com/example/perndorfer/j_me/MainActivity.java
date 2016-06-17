@@ -48,7 +48,7 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static String ipString = "10.0.0.7";
+    private static String ipString = "10.0.0.10";
     FragmentPagerAdapter fragmentPagerAdapter;
     private DBHelper dbHelper;
     static Socket s;
