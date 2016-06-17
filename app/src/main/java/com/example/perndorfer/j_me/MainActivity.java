@@ -161,7 +161,7 @@ public class MainActivity extends ActionBarActivity {
                                     });
                                     mBuilder =
                                             new NotificationCompat.Builder(getBaseContext())
-                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(text);
                                     notificationManager.notify(1, mBuilder.build());
@@ -184,7 +184,7 @@ public class MainActivity extends ActionBarActivity {
 
                                     mBuilder =
                                             new NotificationCompat.Builder(getBaseContext())
-                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%8E%B5", "UTF-8") + " Audio");
                                     notificationManager.notify(1, mBuilder.build());
@@ -209,7 +209,7 @@ public class MainActivity extends ActionBarActivity {
 
                                     mBuilder =
                                             new NotificationCompat.Builder(getBaseContext())
-                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%B7", "UTF-8") + " Bild");
                                     notificationManager.notify(1, mBuilder.build());
@@ -233,7 +233,7 @@ public class MainActivity extends ActionBarActivity {
 
                                     mBuilder =
                                             new NotificationCompat.Builder(getBaseContext())
-                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%B9", "UTF-8") + " Video");
                                     notificationManager.notify(1, mBuilder.build());
@@ -257,7 +257,7 @@ public class MainActivity extends ActionBarActivity {
 
                                     mBuilder =
                                             new NotificationCompat.Builder(getBaseContext())
-                                                    .setSmallIcon(R.drawable.notification)
+                                                    .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%82", "UTF-8") + " Datei");
                                     notificationManager.notify(1, mBuilder.build());
@@ -266,7 +266,6 @@ public class MainActivity extends ActionBarActivity {
                                 default:
                                     System.exit(0);
                             }
-                            setWritersAndReaders();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -299,6 +298,7 @@ public class MainActivity extends ActionBarActivity {
             fileOut.close();
             inputStream.close();
             outputStream.close();
+            s.close();
             setConnectionAndStreams();
             Log.w("*===WRITE FINISHED===5", "writeFile: FINISHED");
         } catch (Exception e) {
@@ -403,19 +403,24 @@ public class MainActivity extends ActionBarActivity {
     public static void setConnectionAndStreams() {
         try {
             if (s != null) {
+                inputStream.close();
+                outputStream.close();
                 s.close();
+                Log.e("*===ISDOWN===", s.isInputShutdown() + " and closed");
             }
-            //s = new Socket(ipString, 1234);
+
             s = new Socket(ipString, 1234);
             inputStream = s.getInputStream();
             outputStream = s.getOutputStream();
+            Log.w("*===ISDOWN===", s.isInputShutdown()+"" );
             Log.d("*===THREAD STARTED====", outputStream.toString() + "");
             br = new BufferedReader(new InputStreamReader(inputStream));
             bw = new BufferedWriter(new OutputStreamWriter(outputStream));
             bw.write(mPhoneNumber + "\r\n");
             bw.flush();
 
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

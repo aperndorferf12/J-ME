@@ -55,7 +55,7 @@ public class ChatAct extends ActionBarActivity {
     private String destPhoneNumber;
     private String mPhoneNumber;
     private static Activity context;
-    private static int black, white;
+    private static int black, white, red;
     private static ScrollView sv;
     private OutputStream outputStream;
     private String selectedPath;
@@ -76,6 +76,7 @@ public class ChatAct extends ActionBarActivity {
         context = this;
         black = getResources().getColor(android.R.color.black);
         white = getResources().getColor(android.R.color.white);
+        red = getResources().getColor(R.color.red);
 
         ausgabe = (LinearLayout) findViewById(R.id.ausgabe);
         eingabe = (EditText) findViewById(R.id.eingabe);
@@ -159,6 +160,8 @@ public class ChatAct extends ActionBarActivity {
     {
         ImageView iv = new ImageView(context);
         registerForContextMenu(iv);
+        iv.setPadding(5,5,5,5);
+        iv.setBackgroundColor(red);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         iv.setLayoutParams(llp);
@@ -192,6 +195,7 @@ public class ChatAct extends ActionBarActivity {
     private void insertMeVideo(final String path, String date)
     {
         final VideoView vv = new VideoView(context);
+        vv.setPadding(5,5,5,5);
         registerForContextMenu(vv);
         vv.setVideoPath(path);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(550,550);
@@ -258,6 +262,8 @@ public class ChatAct extends ActionBarActivity {
 
             ImageView iv = new ImageView(context);
             context.registerForContextMenu(iv);
+            iv.setPadding(5,5,5,5);
+            iv.setBackgroundColor(white);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             llp.setMargins(0, 10, 0, 0);
             iv.setLayoutParams(llp);
@@ -295,6 +301,7 @@ public class ChatAct extends ActionBarActivity {
         if(id == chatId)
         {
             final VideoView vv = new VideoView(context);
+            vv.setPadding(5,5,5,5);
             vv.setVideoPath(path);
             context.registerForContextMenu(vv);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(550,550);
@@ -382,6 +389,8 @@ public class ChatAct extends ActionBarActivity {
     {
         TextView music = new TextView(context);
         registerForContextMenu(music);
+        music.setPadding(5,5,5,5);
+        music.setBackgroundColor(red);
         music.setBackgroundResource(R.drawable.music);
         music.setTextColor(black);
         music.setText(new File(path).getName() + "\n" + date);
@@ -418,6 +427,8 @@ public class ChatAct extends ActionBarActivity {
         {
             TextView music = new TextView(context);
             context.registerForContextMenu(music);
+            music.setPadding(5,5,5,5);
+            music.setBackgroundColor(white);
             music.setBackgroundResource(R.drawable.music);
             music.setTextColor(black);
             music.setText(new File(path).getName() + "\n" + date);
@@ -475,12 +486,14 @@ public class ChatAct extends ActionBarActivity {
     private void insertMeFile(final String msg, String date)
     {
         final LinearLayout ll = (LinearLayout)context.getLayoutInflater().inflate(R.layout.fc_item,null);
+        ll.setBackgroundColor(red);
         registerForContextMenu(ll);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         llp.setMargins(0, 10, 0, 0);
         ll.setLayoutParams(llp);
         TextView tv = (TextView)ll.findViewById(R.id.folderName);
         tv.setText(msg);
+        tv.setTextColor(white);
         tv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -675,7 +688,7 @@ public class ChatAct extends ActionBarActivity {
 
     private void sendFile(String flag)
     {
-        Log.e("*===sendfile", "sendFile: ");
+        Log.e("*===sendfile===", "sendFile: ");
 
         if (selectedPath != null) {
 

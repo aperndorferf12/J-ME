@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#A10000</color>
     <color name="colorAccent">#D40000</color>
     <color name="tabSliderColor">#B90000</color>
+    <color name="red">#D40000</color>
 </resources>
