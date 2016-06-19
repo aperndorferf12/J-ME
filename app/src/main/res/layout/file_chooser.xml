@@ -8,13 +8,5 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:id="@+id/rootView">
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Zurück"
-        android:id="@+id/back"
-        android:onClick="onBackClicked"/>
-
-
-</LinearLayout>
+ </LinearLayout>
 </ScrollView>

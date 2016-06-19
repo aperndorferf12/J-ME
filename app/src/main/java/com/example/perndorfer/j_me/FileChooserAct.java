@@ -1,10 +1,12 @@
 package com.example.perndorfer.j_me;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,15 +39,18 @@ public class FileChooserAct extends AppCompatActivity
 
     private void listFiles(File file)
     {
+        layout.removeAllViews();
         if(!file.equals(root))
         {
             if(file.getParentFile().equals(root))
             {
                 previousFile=root;
+                Log.d("*=", "prevFile=root");
             }
             else
             {
                 previousFile=file.getParentFile();
+                Log.d("*=", "prevFile= "+previousFile.getAbsolutePath());
             }
         }
 
@@ -64,7 +69,6 @@ public class FileChooserAct extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         Log.d("*=SelFile", "onClick " + selectedFile);
-                        layout.removeAllViews();
                         listFiles(files[z]);
                     }
                 });
@@ -92,8 +96,17 @@ public class FileChooserAct extends AppCompatActivity
         }
     }
 
-    public void onBackClicked(final View src)
-    {
-        listFiles(previousFile);
+    @Override
+    public void onBackPressed() {
+        if(previousFile.equals(root))
+        {
+            Log.w("*=",previousFile.getAbsolutePath() );
+            finish();
+        }else
+        {
+            Log.e("*=", previousFile.getAbsolutePath());
+            listFiles(previousFile);
+        }
     }
+
 }
