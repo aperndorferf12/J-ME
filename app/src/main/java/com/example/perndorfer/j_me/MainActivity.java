@@ -1,36 +1,33 @@
 package com.example.perndorfer.j_me;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.AudioAttributes;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,9 +41,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static String ipString = "10.0.0.10";
     FragmentPagerAdapter fragmentPagerAdapter;
@@ -60,6 +56,9 @@ public class MainActivity extends ActionBarActivity {
     private static BufferedWriter bw = null;
     private static BufferedReader br = null;
     private Thread t;
+    private AppCompatActivity thisActivity=this;
+    private Vibrator vibrator;
+    private Ringtone r;
 
 
     public static SQLiteDatabase getDb() {
@@ -81,6 +80,10 @@ public class MainActivity extends ActionBarActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
+
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         fragmentPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(fragmentPagerAdapter);
@@ -145,10 +148,13 @@ public class MainActivity extends ActionBarActivity {
                         Log.w("*===NUMBER===3", number);
                         final int id = c.getInt(c.getColumnIndex(TblContacts.ID));
                         final String name = c.getString(c.getColumnIndex(TblContacts.NAME));
+                        Contact contact = new Contact(id,name,number);
                         NotificationCompat.Builder mBuilder = null;
 
                         try {
                             fileOut = null;
+                            Intent i;
+                            PendingIntent resultPendingIntent;
                             switch (flag) {
                                 case "msg":
                                     db.execSQL("INSERT INTO chatrecords(who,flag,text,date,chat_id) VALUES('remote','" + flag + "','" + text + "','" + date + "'," + id + ");");
@@ -164,7 +170,21 @@ public class MainActivity extends ActionBarActivity {
                                                     .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(text);
+                                    i = new Intent(thisActivity,ChatAct.class);
+                                    i.putExtra("CONTACT",contact);
+                                    i.putExtra("CHATID", contact.getChat_id());
+
+                                    resultPendingIntent =
+                                            PendingIntent.getActivity(
+                                                    thisActivity,
+                                                    0,
+                                                    i,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            );
+
+                                    mBuilder.setContentIntent(resultPendingIntent);
                                     notificationManager.notify(1, mBuilder.build());
+                                    notifyMessage();
                                     break;
 
                                 case "audio":
@@ -187,7 +207,22 @@ public class MainActivity extends ActionBarActivity {
                                                     .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%8E%B5", "UTF-8") + " Audio");
+
+                                    i = new Intent(thisActivity,ChatAct.class);
+                                    i.putExtra("CONTACT", contact);
+                                    i.putExtra("CHATID", contact.getChat_id());
+
+                                    resultPendingIntent =
+                                            PendingIntent.getActivity(
+                                                    thisActivity,
+                                                    0,
+                                                    i,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            );
+
+                                    mBuilder.setContentIntent(resultPendingIntent);
                                     notificationManager.notify(1, mBuilder.build());
+                                    notifyMessage();
                                     break;
 
                                 case "image":
@@ -212,7 +247,22 @@ public class MainActivity extends ActionBarActivity {
                                                     .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%B7", "UTF-8") + " Bild");
+
+                                    i = new Intent(thisActivity,ChatAct.class);
+                                    i.putExtra("CONTACT", contact);
+                                    i.putExtra("CHATID", contact.getChat_id());
+
+                                    resultPendingIntent =
+                                            PendingIntent.getActivity(
+                                                    thisActivity,
+                                                    0,
+                                                    i,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            );
+
+                                    mBuilder.setContentIntent(resultPendingIntent);
                                     notificationManager.notify(1, mBuilder.build());
+                                    notifyMessage();
                                     break;
 
                                 case "video":
@@ -236,7 +286,22 @@ public class MainActivity extends ActionBarActivity {
                                                     .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%B9", "UTF-8") + " Video");
+
+                                    i = new Intent(thisActivity,ChatAct.class);
+                                    i.putExtra("CONTACT", contact);
+                                    i.putExtra("CHATID", contact.getChat_id());
+
+                                    resultPendingIntent =
+                                            PendingIntent.getActivity(
+                                                    thisActivity,
+                                                    0,
+                                                    i,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            );
+
+                                    mBuilder.setContentIntent(resultPendingIntent);
                                     notificationManager.notify(1, mBuilder.build());
+                                    notifyMessage();
                                     break;
 
                                 case "file":
@@ -260,7 +325,22 @@ public class MainActivity extends ActionBarActivity {
                                                     .setSmallIcon(android.R.drawable.ic_dialog_email)
                                                     .setContentTitle(name)
                                                     .setContentText(URLDecoder.decode("%F0%9F%93%82", "UTF-8") + " Datei");
+
+                                    i = new Intent(thisActivity,ChatAct.class);
+                                    i.putExtra("CONTACT", contact);
+                                    i.putExtra("CHATID", contact.getChat_id());
+
+                                    resultPendingIntent =
+                                            PendingIntent.getActivity(
+                                                    thisActivity,
+                                                    0,
+                                                    i,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            );
+
+                                    mBuilder.setContentIntent(resultPendingIntent);
                                     notificationManager.notify(1, mBuilder.build());
+                                    notifyMessage();
                                     break;
 
                                 default:
@@ -287,7 +367,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void writeFile(OutputStream fileOut) {
         try {
-            byte[] bytes = new byte[16 * 1024];
+            byte[] bytes = new byte[16*1024];
 
             int count;
 
@@ -456,6 +536,11 @@ public class MainActivity extends ActionBarActivity {
         return mPhoneNumber;
     }
 
+    private void notifyMessage()
+    {
+        vibrator.vibrate(150);
+        r.play();
+    }
 
     private ArrayList<Fragment> getFragments() {
         ArrayList<Fragment> fragments = new ArrayList<>();

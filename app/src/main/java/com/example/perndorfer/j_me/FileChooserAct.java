@@ -21,6 +21,8 @@ public class FileChooserAct extends AppCompatActivity
     private LinearLayout layout;
     private String selectedFile = "";
     private AppCompatActivity activity = this;
+    private File previousFile;
+    private File root;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,14 +30,26 @@ public class FileChooserAct extends AppCompatActivity
         layout = (LinearLayout)findViewById(R.id.rootView);
         setTitle("Datei auswählen...");
 
-        File root = new File("/");
+        root = new File("/");
+        previousFile = root;
         listFiles(root);
     }
 
     private void listFiles(File file)
     {
-        final File [] files = file.listFiles();
+        if(!file.equals(root))
+        {
+            if(file.getParentFile().equals(root))
+            {
+                previousFile=root;
+            }
+            else
+            {
+                previousFile=file.getParentFile();
+            }
+        }
 
+        final File [] files = file.listFiles();
         for(int i = 0; i<files.length; i++)
         {
             final int z = i;
@@ -76,5 +90,10 @@ public class FileChooserAct extends AppCompatActivity
 
             }
         }
+    }
+
+    public void onBackClicked(final View src)
+    {
+        listFiles(previousFile);
     }
 }

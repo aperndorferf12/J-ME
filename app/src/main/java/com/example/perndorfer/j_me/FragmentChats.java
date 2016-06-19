@@ -83,30 +83,34 @@ public class FragmentChats extends Fragment
             Log.d("*===FragmentCHATS===", id+", "+name + " NUMBER: " + number);
         }
 
-        if(c.moveToFirst())
+        if (thisFragment.getActivity()!=null)
         {
-            String[] cols = {TblContacts.NAME, TblChatRecords.TEXT};
-            int[] lay = {android.R.id.text1, android.R.id.text2};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(thisFragment.getActivity(), android.R.layout.two_line_list_item, c, cols, lay);
-            chats.setAdapter(adapter);
+            if(c.moveToFirst())
+            {
+                String[] cols = {TblContacts.NAME, TblChatRecords.TEXT};
+                int[] lay = {android.R.id.text1, android.R.id.text2};
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(thisFragment.getActivity(), android.R.layout.two_line_list_item, c, cols, lay);
+                chats.setAdapter(adapter);
 
-            chats.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    onClickChat(position);
-                }
-            });
-            chats.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectedItem = position;
-                    return false;
-                }
-            });
+                chats.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        onClickChat(position);
+                    }
+                });
+                chats.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                        selectedItem = position;
+                        return false;
+                    }
+                });
+            }
+            else {
+                chats.setAdapter(new ArrayAdapter<Contact>(thisFragment.getActivity(),android.R.layout.simple_list_item_1,contactsWithChat));
+            }
         }
-        else {
-            chats.setAdapter(new ArrayAdapter<Contact>(thisFragment.getActivity(),android.R.layout.simple_list_item_1,contactsWithChat));
-        }
+
     }
 
     private static void onClickChat(final int pos) {

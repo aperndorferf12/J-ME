@@ -1,7 +1,7 @@
 package com.example.perndorfer.j_me;
 
-import android.support.v7.app.ActionBar;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -21,7 +22,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -61,13 +61,15 @@ public class ChatAct extends ActionBarActivity {
     private String selectedPath;
     private static View selectedView;
     private static String selectedText="";
-
+    private NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_act);
 
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
         sv = (ScrollView) findViewById(R.id.sv);
         outputStream = MainActivity.getOutputStream();
         bw = MainActivity.getBw();
@@ -352,7 +354,7 @@ public class ChatAct extends ActionBarActivity {
         tv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onLongClicked(v,msg);
+                onLongClicked(v, msg);
                 return false;
             }
         });
@@ -433,7 +435,7 @@ public class ChatAct extends ActionBarActivity {
             music.setTextColor(black);
             music.setText(new File(path).getName() + "\n" + date);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            llp.setMargins(0,10,0,0);
+            llp.setMargins(0, 10, 0, 0);
             music.setLayoutParams(llp);
 
             music.setOnClickListener(new View.OnClickListener() {
@@ -449,7 +451,7 @@ public class ChatAct extends ActionBarActivity {
             music.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    onLongClicked(v,path);
+                    onLongClicked(v, path);
                     return false;
                 }
             });
@@ -513,42 +515,52 @@ public class ChatAct extends ActionBarActivity {
 
     public void send(final View src) {
         Log.w("*===SEND===", "Sending");
-        String msg = eingabe.getText().toString();
+        final String msg = eingabe.getText().toString();
         bw = new BufferedWriter(new OutputStreamWriter(MainActivity.getOutputStream()));
-
-        try
+        if(!msg.equals(""))
         {
-            //textAusgabe.setText(textAusgabe.getText() + "\r\n Du: " + eingabe.getText());
-            TextView tv = new TextView(this);
-            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            llp.setMargins(0, 10, 0, 0);
-            tv.setLayoutParams(llp);
-            tv.setTextSize(16);
-            tv.setTextColor(white);
-            //tv.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-            tv.setBackgroundResource(R.drawable.me);
-            tv.setPadding(30, 10, 30, 10);
+            try
+            {
+                //textAusgabe.setText(textAusgabe.getText() + "\r\n Du: " + eingabe.getText());
+                TextView tv = new TextView(this);
+                registerForContextMenu(tv);
+                LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                llp.setMargins(0, 10, 0, 0);
+                tv.setLayoutParams(llp);
+                tv.setTextSize(16);
+                tv.setTextColor(white);
+                //tv.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                tv.setBackgroundResource(R.drawable.me);
+                tv.setPadding(30, 10, 30, 10);
+                tv.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        onLongClicked(v,msg);
+                        return false;
+                    }
+                });
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-            String date = sdf.format(new Date());
-            tv.setText(eingabe.getText() + "\n" + date);
-            ausgabe.addView(tv);
-            sv.fullScroll(ScrollView.FOCUS_DOWN);
-            Log.e("*===WROTE===", "WROTE");
-            bw.write(destPhoneNumber + ";" + mPhoneNumber + ";msg;" + URLEncoder.encode(msg, "UTF-8") + ";" + date + "\r\n");
-            bw.flush();
-            db.execSQL("INSERT INTO chatrecords (who,flag,text,chat_id, date) VALUES ('me','msg','" + msg + "'," + chatId + ",'" + date + "')");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    FragmentChats.onCreateStuffAndUpdate();
-                }
-            });
-        }
-        catch (Exception e)
-        {
-            Log.w("", "Fehler beim Senden");
-            e.printStackTrace();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+                String date = sdf.format(new Date());
+                tv.setText(eingabe.getText() + "\n" + date);
+                ausgabe.addView(tv);
+                sv.fullScroll(ScrollView.FOCUS_DOWN);
+                Log.e("*===WROTE===", "WROTE");
+                bw.write(destPhoneNumber + ";" + mPhoneNumber + ";msg;" + URLEncoder.encode(msg, "UTF-8") + ";" + date + "\r\n");
+                bw.flush();
+                db.execSQL("INSERT INTO chatrecords (who,flag,text,chat_id, date) VALUES ('me','msg','" + msg + "'," + chatId + ",'" + date + "')");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentChats.onCreateStuffAndUpdate();
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Log.w("*===", "Fehler beim Senden");
+                e.printStackTrace();
+            }
         }
         eingabe.setText("");
     }
@@ -701,7 +713,7 @@ public class ChatAct extends ActionBarActivity {
                 String fileNameExtension = file.getName().substring(index);
                 Log.wtf("*===FileName===",fileNameExtension);
 
-                final byte[] bytes = new byte[16 * 1024];
+                final byte[] bytes = new byte[16*1024];
 
                 final InputStream fileIn = new FileInputStream(file);
                 bw.write(destPhoneNumber + ";" + mPhoneNumber + ";" + flag + ";" + System.currentTimeMillis() + fileNameExtension + ";" + date + "\r\n");
