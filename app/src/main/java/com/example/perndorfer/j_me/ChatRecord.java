@@ -5,6 +5,7 @@ import java.util.HashMap;
 /**
  * Created by Perndorfer on 07.04.2016.
  */
+@Deprecated
 public class ChatRecord
 {
     private int chatId;

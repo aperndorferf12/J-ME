@@ -44,7 +44,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String ipString = "10.0.0.10";
+    private static String ipString = "10.0.2.244";
     FragmentPagerAdapter fragmentPagerAdapter;
     private DBHelper dbHelper;
     static Socket s;
@@ -466,16 +466,24 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.exit) {
             Log.e("EXIT", "*======EXIT======");
-
-            try {
-                inputStream.close();
-                outputStream.close();
-                s.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.exit(0);
-            finish();
+            AlertDialog.Builder ab = new AlertDialog.Builder(this);
+            ab.setTitle("Beenden");
+            ab.setMessage("Wenn Sie beenden wird alles geschlossen. Dadurch können Sie keine Nachrichten mehr empfangen.\nFortfahren?");
+            ab.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        inputStream.close();
+                        outputStream.close();
+                        s.close();
+                        System.exit(0);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            ab.setNegativeButton("Nein",null);
+            ab.show();
         }
         return super.onOptionsItemSelected(item);
     }
