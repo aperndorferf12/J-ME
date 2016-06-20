@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable
     public static final String DB_NAME = "data.db";
     Context context;
     public DBHelper(Context context) {
-        super(context,DB_NAME,null,DB_VERSION);
+        super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
     }
 
@@ -33,8 +34,22 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable
     public void seed(SQLiteDatabase db)
     {
         Log.w("SEED", "seed:=========================================");
-        Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER}, ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET + "<> 'com.whatsapp' AND "+ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET+" <> 'com.google'", null, null);
+        Uri simUri = Uri.parse("content://icc/adn");
+        //Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER}, ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET + "<> 'com.whatsapp' AND "+ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET+" <> 'com.google'", null, null);
         //Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER}, null,null,null);
+        //Cursor c = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER}, ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET + "<> 'com.whatsapp'", null, null);
+        Cursor c = context.getContentResolver().query(simUri, new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER}, null, null, null);
+
+        while (c.moveToNext())
+        {
+            String name = c.getString(c.getColumnIndex("name"));
+            int id = c.getInt(c.getColumnIndex("_id"));
+            String phone = c.getString(c.getColumnIndex("number"));
+            phone = parsePhoneNumber(phone);
+            Log.w("Contacts", id+" Name: "+name+" Phone: "+phone );
+            db.execSQL("INSERT INTO contacts (_id, name, number, haschat) VALUES ("+id+",'"+name+"','"+phone+"','false')");
+        }
+/*
         while (c.moveToNext())
         {
             String name = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -44,7 +59,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable
             Log.w("Contacts", id+" Name: "+name+" Phone: "+phone );
             db.execSQL("INSERT INTO contacts (_id, name, number, haschat) VALUES ("+id+",'"+name+"','"+phone+"','false')");
             //db.execSQL("INSERT INTO chats (_id,name) VALUES (" + id + ",'" + name + "')");
-        }
+        }*/
     }
 
     private String parsePhoneNumber(String number)
