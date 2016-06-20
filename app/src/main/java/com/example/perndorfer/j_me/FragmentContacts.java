@@ -21,7 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 /**
- * Created by Alexander on 03.06.2016.
+ * Created by Huemer on 03.06.2016.
  */
 public class FragmentContacts extends Fragment
 {

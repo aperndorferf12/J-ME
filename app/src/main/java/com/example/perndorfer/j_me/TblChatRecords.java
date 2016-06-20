@@ -1,7 +1,7 @@
 package com.example.perndorfer.j_me;
 
 /**
- * Created by Perndorfer on 07.04.2016.
+ * Created by Perndorfer/Huemer on 07.04.2016.
  */
 public class TblChatRecords
 {

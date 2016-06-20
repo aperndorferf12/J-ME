@@ -18,7 +18,7 @@ import android.widget.TextView;
 import java.io.File;
 
 /**
- * Created by Alexander on 10.06.2016.
+ * Created by Huemer on 10.06.2016.
  */
 public class FileChooserAct extends AppCompatActivity
 {

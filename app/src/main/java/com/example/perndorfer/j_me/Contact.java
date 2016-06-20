@@ -3,7 +3,7 @@ package com.example.perndorfer.j_me;
 import java.io.Serializable;
 
 /**
- * Created by Perndorfer on 07.04.2016.
+ * Created by Huemer on 07.04.2016.
  */
 public class Contact implements Serializable
 {

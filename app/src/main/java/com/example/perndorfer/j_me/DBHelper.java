@@ -10,7 +10,7 @@ import android.util.Log;
 import java.io.Serializable;
 
 /**
- * Created by Perndorfer on 07.04.2016.
+ * Created by Huemer on 07.04.2016.
  */
 public class DBHelper extends SQLiteOpenHelper implements Serializable
 {
