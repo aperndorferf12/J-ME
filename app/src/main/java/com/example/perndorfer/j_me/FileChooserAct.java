@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +33,11 @@ public class FileChooserAct extends AppCompatActivity
         setContentView(R.layout.file_chooser);
         layout = (LinearLayout)findViewById(R.id.rootView);
         setTitle("Datei auswählen...");
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         root = new File("/");
         previousFile = root;
@@ -97,16 +104,16 @@ public class FileChooserAct extends AppCompatActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return false;
+    }
+
+    @Override
     public void onBackPressed() {
-        if(previousFile.equals(root))
-        {
-            Log.w("*=",previousFile.getAbsolutePath() );
-            finish();
-        }else
-        {
-            Log.e("*=", previousFile.getAbsolutePath());
-            listFiles(previousFile);
-        }
+        Log.e("*=", previousFile.getAbsolutePath());
+        listFiles(previousFile);
+
     }
 
 }
